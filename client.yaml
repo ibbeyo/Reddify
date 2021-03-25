@@ -1,0 +1,8 @@
+{
+  client_id: '', 
+  client_secret: '',
+  redditfy_playlist_id: '', 
+  redirect_uri: '',
+  scope: 'playlist-modify-public,playlist-modify-private,playlist-read-collaborative',
+  username: ''
+}

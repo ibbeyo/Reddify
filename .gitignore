@@ -1,0 +1,5 @@
+#spotify client creds
+config.yaml
+
+#spotiy cache files
+.cache-*
