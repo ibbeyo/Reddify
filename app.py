@@ -100,14 +100,15 @@ class SpotifyAPI(object):
         for x in range(2):
 
             if not titles[x]: continue
-            result = self._spotSearch(q=titles[x])
-            if result: self.tracks_queued.append(result['data']['uri'])
+            uri = self._spotSearch(q=titles[x])
+            if uri: self.tracks_queued.append(uri)
         
         return
     
 
     def updatePlaylist(self):
-        self.apiAuthFlow.user_playlist_add_tracks(self._username, playlist_id=self._redditfy_playlist_id, tracks=list(set(self.tracks_queued)))
+        if self.tracks_queued:
+            self.apiAuthFlow.user_playlist_add_tracks(self._username, playlist_id=self._redditfy_playlist_id, tracks=list(set(self.tracks_queued)))
         return
 
 
@@ -119,8 +120,9 @@ if __name__ == '__main__':
     spotify = SpotifyAPI()
     spotify.createPlaylist()
 
-    for submission in reddit.search_submissions(after='30d', subreddit='melodicdeathmetal', filter=['url', 'domain', 'title'], limit=10):
+    for submission in reddit.search_submissions(after='10d', subreddit='melodicdeathmetal', filter=['url', 'domain', 'title'], limit=10):
         if submission.domain.startswith('youtu'):
+            print(submission)
             spotify.queueTrack(submission)
 
     spotify.updatePlaylist()
