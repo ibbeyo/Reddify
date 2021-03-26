@@ -1,11 +1,14 @@
-import datetime as dt
-import re, sys, yaml, json, shutil, os
-from urllib import parse
+#add sys.argv cmd arguments
+#youtube api - option to create youtube playlist
+
+import argparse
+import re, yaml, json, shutil, os
 import spotipy
 import spotipy.util as util
 from spotipy.oauth2 import SpotifyClientCredentials
 from psaw.PushshiftAPI import PushshiftAPI
-from youtube_search import YoutubeSearch
+from pytube import YouTube
+import datetime
 
 
 def getUserConfig():
@@ -88,21 +91,14 @@ class SpotifyAPI(object):
 
 
     def queueTrack(self, track):
-        parsed = parse.urlsplit(track.url)
+        yt = YouTube(url=track.url)
+        titles = [yt.title, track.title]
 
-        if parsed.netloc.endswith('.be'): song_id = parsed.path[1:]
-        elif parsed.netloc.endswith('.com'): song_id = dict(parse.parse_qs(parsed.query)).get('v')[0]
+        for title in titles:
+            uri = self._spotSearch(q=title)
 
-        yt = YoutubeSearch(search_terms=song_id, max_results=1).to_json()
-        song = json.loads(yt)['videos']
-        titles = [song[0]['title'] if song else None, track.title]
-
-        for x in range(2):
-
-            if not titles[x]: continue
-            uri = self._spotSearch(q=titles[x])
-            if uri: self.tracks_queued.append(uri)
-        
+            if uri and not self.doesTrackExists(uri):
+                self.tracks_queued.append(uri)
         return
     
 
@@ -113,16 +109,31 @@ class SpotifyAPI(object):
 
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='Reddify CLI')
+    
+    parser.add_argument('-s', '--subreddit', type=str, metavar='', required=True, help='Subreddit Name')
+    parser.add_argument('-d', '--days', type=int, metavar='', help='Days Back', default=1)
+    parser.add_argument('-l', '--limit', type=int, metavar='', help='Max Number of Posts to Request', default=100)
+    args = parser.parse_args()
+
+    query_options = {
+        'after'     : f'{args.days}d',
+        'subreddit' : args.subreddit,
+        'filter'    : ['url', 'domain', 'title']
+    }
+
+    if args.limit: query_options['limit'] = args.limit
+
     if not os.path.exists('config.yaml'):
-        shutil.copy2('client.yaml', 'config.yaml')
+        shutil.move('client.yaml', 'config.yaml')
 
     reddit = PushshiftAPI()
     spotify = SpotifyAPI()
     spotify.createPlaylist()
 
-    for submission in reddit.search_submissions(after='10d', subreddit='melodicdeathmetal', filter=['url', 'domain', 'title'], limit=10):
+    for submission in reddit.search_submissions(**query_options):
         if submission.domain.startswith('youtu'):
-            print(submission)
             spotify.queueTrack(submission)
 
     spotify.updatePlaylist()
