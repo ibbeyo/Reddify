@@ -1,4 +1,3 @@
-#add sys.argv cmd arguments
 #youtube api - option to create youtube playlist
 
 import argparse
@@ -104,7 +103,9 @@ class SpotifyAPI(object):
 
     def updatePlaylist(self):
         if self.tracks_queued:
-            self.apiAuthFlow.user_playlist_add_tracks(self._username, playlist_id=self._redditfy_playlist_id, tracks=list(set(self.tracks_queued)))
+            self.apiAuthFlow.user_playlist_add_tracks(
+                self._username, playlist_id=self._redditfy_playlist_id, tracks=list(set(self.tracks_queued))
+            )
         return
 
 
