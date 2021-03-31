@@ -1,5 +1,4 @@
-import re, argparse
-from sys import path
+import re
 import spotipy
 import spotipy.util as util
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -15,6 +14,7 @@ class ReddifyAPI(object):
         super().__init__()
 
         self.song_queue = set()
+        self.ignore_artist = list()
         self.username = username
         self.client_id = client_id
         self.client_secret = client_secret
@@ -102,8 +102,10 @@ class ReddifyAPI(object):
 
             if len(results['tracks']['items']) > 0:
                 song_uri = results['tracks']['items'][0]['uri']
-                self.song_queue.add(song_uri)
-                break
+
+                if not self.does_song_exist(song_uri):
+                    self.song_queue.add(song_uri)
+                    break
 
         return
 
@@ -113,8 +115,8 @@ class ReddifyAPI(object):
         playlist_name = f'#Reddify - {subreddit}'.title()
         self.playlist_id = self.playlist_create(playlist_name)
 
-        artists = [ignore_artist] if type(ignore_artist) is not list else ignore_artist
-        self.ignore_artist = [artist.title() for artist in artists]
+        if isinstance(ignore_artist, list):
+            self.ignore_artist = [artist.title() for artist in ignore_artist]
 
         search_options = {
             'after'     : f'{after}d',
@@ -131,6 +133,7 @@ class ReddifyAPI(object):
 
 
 def main():
+    import argparse
     from dotenv import dotenv_values
 
     parser = argparse.ArgumentParser(description='Reddify CLI')
@@ -150,6 +153,7 @@ def main():
     args = parser.parse_args()
 
     reddify = ReddifyAPI(**{**dotenv_values(".env")})
+    
     reddify.playlist_from_subreddit(
         subreddit=args.subreddit, after=args.days, limit=args.limit, ignore_artist=args.ignore_artist)
 
