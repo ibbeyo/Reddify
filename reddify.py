@@ -128,7 +128,7 @@ class ReddifyAPI(object):
         self.playlist_update()
 
 
-def main():
+def __cli():
     import argparse
     from dotenv import dotenv_values
 
@@ -155,4 +155,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    __cli()
