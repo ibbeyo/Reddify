@@ -77,28 +77,25 @@ class ReddifyAPI(object):
 
     def playlist_queue(self, song_url, song_title):
         possible_query = [song_title]
+
         try:
             yt = YouTube(url=song_url)
             possible_query.insert(0, yt.title)
 
         except Exception: pass
         
-
         for query in possible_query:
 
             title = re.split(r'-|—', query, maxsplit=1)
-            
-            if len(title) < 2: return False
-
             artist = title[0].title().strip()
             
-            if artist in self.ignore_artist: break
+            if len(title) < 2 or artist in self.ignore_artist: 
+                break
             
             song = re.sub(r'[\(\[].*?[\)\]]|\"', '', title[1].title().strip())
 
             results = self._spotCredFlow.search(
-                q=f'artist: {artist} track: {song}', limit=1, type='track'
-            )
+                q=f'artist: {artist} track: {song}', limit=1, type='track')
 
             if len(results['tracks']['items']) > 0:
                 song_uri = results['tracks']['items'][0]['uri']
@@ -106,7 +103,6 @@ class ReddifyAPI(object):
                 if not self.does_song_exist(song_uri):
                     self.song_queue.add(song_uri)
                     break
-
         return
 
 
@@ -153,7 +149,7 @@ def main():
     args = parser.parse_args()
 
     reddify = ReddifyAPI(**{**dotenv_values(".env")})
-    
+
     reddify.playlist_from_subreddit(
         subreddit=args.subreddit, after=args.days, limit=args.limit, ignore_artist=args.ignore_artist)
 
