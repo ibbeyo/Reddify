@@ -1,5 +1,9 @@
-#spotify client creds
-config.yaml
+#local environment vars
+._env
 
 #spotiy cache files
 .cache-*
+
+#python venv
+.venv/
+.vscode/

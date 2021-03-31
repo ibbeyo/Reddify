@@ -1,141 +1,158 @@
-#youtube api - option to create youtube playlist
-
-import argparse
-import re, yaml, json, shutil, os
+import re, argparse
+from sys import path
 import spotipy
 import spotipy.util as util
 from spotipy.oauth2 import SpotifyClientCredentials
 from psaw.PushshiftAPI import PushshiftAPI
 from pytube import YouTube
-import datetime
 
 
-def getUserConfig():
-    with open('config.yaml') as fs:
-        user_config = yaml.load(fs)
-    return user_config
+class ReddifyAPI(object):
+    scope = 'playlist-modify-public,playlist-modify-private,playlist-read-collaborative'
 
 
-def updateUserConfig(k, v):
-    config = getUserConfig()
-    with open('config.yaml', 'w') as fs:
-        config[k] = v
-        yaml.dump(config, fs)
-    return
-
-
-class SpotifyAPI(object):
-
-    def __init__(self):
+    def __init__(self, username, client_id, client_secret, redirect_uri):
         super().__init__()
-        self.tracks_queued = []
-        self._user_config = getUserConfig()
-        self._client_secret = self._user_config['client_secret']
-        self._client_id = self._user_config['client_id']
-        self._username = self._user_config['username']
-        self._scope = self._user_config['scope']
-        self._redirect_uri = self._user_config['redirect_uri']
-        self._redditfy_playlist_id = self._user_config['redditfy_playlist_id']
 
-        self._client_creds_manager = SpotifyClientCredentials(
-            client_id=self._client_id, client_secret=self._client_secret
-        )
+        self.song_queue = set()
+        self.username = username
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.redirect_uri = redirect_uri
 
-        self.apiAuthFlow = spotipy.Spotify(auth=self._getAuthToken())
-        self.apiCredFlow = spotipy.Spotify(client_credentials_manager=self._client_creds_manager)
-
-
-    def _getAuthToken(self):
-        token = util.prompt_for_user_token(
-            username        =   self._username,
-            scope           =   self._scope,
-            client_id       =   self._client_id,
-            client_secret   =   self._client_secret,
-            redirect_uri    =   self._redirect_uri
-        )
-        return token
-
-
-    def _spotSearch(self, q):
-
-        media = re.split(r'-|—', q, maxsplit=1)
+        self.set_spotify_auth_scopes()
         
-        if len(media) < 2: return False
 
-        artist = media[0].title().strip()
-        song = re.sub(r'[\(\[].*?[\)\]]|\"', '', media[1]).title().strip()
+    def set_spotify_auth_scopes(self):
+        
+        token = util.prompt_for_user_token(
+            username        =   self.username,
+            scope           =   self.scope,
+            client_id       =   self.client_id,
+            client_secret   =   self.client_secret,
+            redirect_uri    =   self.redirect_uri
+        )
 
-        response = self.apiCredFlow.search(q=f'artist: {artist} track: {song}', limit=1, type='track')
+        client_creds_manager = SpotifyClientCredentials(
+            client_id=self.client_id, client_secret=self.client_secret
+        )
 
-        if len(response['tracks']['items']) == 0: return False
+        self._spotAuthFlow = spotipy.Spotify(auth=token)
 
-        return response['tracks']['items'][0]['uri']
-
-
-    def createPlaylist(self):
-        playist = 'Redditfy'
-
-        if not self._redditfy_playlist_id:
-            response = self.apiAuthFlow.user_playlist_create(self._username, name=playist)
-            updateUserConfig('redditfy_playlist_id', response['id'])
-            self.__setattr__('_redditfy_playlist_id', response['id'])
-        return
+        self._spotCredFlow = spotipy.Spotify(client_credentials_manager=client_creds_manager)
 
 
-    def doesTrackExists(self, track_uri):
-        tracks = self.apiAuthFlow.user_playlist_tracks(self._username, playlist_id=self._redditfy_playlist_id)
-        for track in tracks['items']:
-            if track['track']['uri'] == track_uri: return True
+    def does_song_exist(self, song_uri):
+
+        songs = self._spotAuthFlow.user_playlist_tracks(
+            self.username, playlist_id=self.playlist_id
+        )
+
+        for song in songs['items']:
+            if song['track']['uri'] == song_uri:
+                return True
         return False
 
 
-    def queueTrack(self, track):
-        yt = YouTube(url=track.url)
-        titles = [yt.title, track.title]
+    def playlist_create(self, playlist_name):
+        ''' Checks if playlist already exist and returns id.
+            If playlist does not exist, playlist will get created and returns id'''
 
-        for title in titles:
-            uri = self._spotSearch(q=title)
+        playlists = self._spotAuthFlow.user_playlists(self.username)
+        if playlists['items']:
+            for playlist in playlists['items']:
+                if playlist['name'] == playlist_name: 
+                    return playlist['id']
 
-            if uri and not self.doesTrackExists(uri):
-                self.tracks_queued.append(uri)
-        return
+        playlist = self._spotAuthFlow.user_playlist_create(self.username, name=playlist_name)
+        return playlist['id']
     
 
-    def updatePlaylist(self):
-        if self.tracks_queued:
-            self.apiAuthFlow.user_playlist_add_tracks(
-                self._username, playlist_id=self._redditfy_playlist_id, tracks=list(set(self.tracks_queued))
+    def playlist_update(self):
+        if self.song_queue:
+            self._spotAuthFlow.user_playlist_add_tracks(
+                self.username, playlist_id=self.playlist_id, tracks=list(self.song_queue)
             )
+
+
+    def playlist_queue(self, song_url, song_title):
+        possible_query = [song_title]
+        try:
+            yt = YouTube(url=song_url)
+            possible_query.insert(0, yt.title)
+
+        except Exception: pass
+        
+
+        for query in possible_query:
+
+            title = re.split(r'-|—', query, maxsplit=1)
+            
+            if len(title) < 2: return False
+
+            artist = title[0].title().strip()
+            
+            if artist in self.ignore_artist: break
+            
+            song = re.sub(r'[\(\[].*?[\)\]]|\"', '', title[1].title().strip())
+
+            results = self._spotCredFlow.search(
+                q=f'artist: {artist} track: {song}', limit=1, type='track'
+            )
+
+            if len(results['tracks']['items']) > 0:
+                song_uri = results['tracks']['items'][0]['uri']
+                self.song_queue.add(song_uri)
+                break
+
         return
 
 
-if __name__ == '__main__':
+    def playlist_from_subreddit(self, subreddit, after=1, limit=None, ignore_artist=None):
+
+        playlist_name = f'#Reddify - {subreddit}'.title()
+        self.playlist_id = self.playlist_create(playlist_name)
+
+        artists = [ignore_artist] if type(ignore_artist) is not list else ignore_artist
+        self.ignore_artist = [artist.title() for artist in artists]
+
+        search_options = {
+            'after'     : f'{after}d',
+            'subreddit' : subreddit,
+            'filter'    : ['url', 'domain', 'title']
+        }
+        if limit: search_options.update({'limit': limit})
+
+        for submission in PushshiftAPI().search_submissions(**search_options):
+            if submission.domain.startswith('youtu'):
+                self.playlist_queue(submission.url, submission.title)
+
+        self.playlist_update()
+
+
+def main():
+    from dotenv import dotenv_values
 
     parser = argparse.ArgumentParser(description='Reddify CLI')
     
-    parser.add_argument('-s', '--subreddit', type=str, metavar='', required=True, help='Subreddit Name')
-    parser.add_argument('-d', '--days', type=int, metavar='', help='Days Back', default=1)
-    parser.add_argument('-l', '--limit', type=int, metavar='', help='Max Number of Posts to Request', default=100)
+    parser.add_argument(
+        '-s', '--subreddit', type=str, metavar='', required=True, help='Subreddit Name')
+
+    parser.add_argument(
+        '-d', '--days', type=int, metavar='', help='Days Back', default=1)
+
+    parser.add_argument(
+        '-l', '--limit', type=int, metavar='', help='Max Number of Posts to Request', default=None)
+
+    parser.add_argument(
+        '-i', '--ignore-artist', metavar='', help='Artist to Ignore', default=None, nargs='*')
+
     args = parser.parse_args()
 
-    query_options = {
-        'after'     : f'{args.days}d',
-        'subreddit' : args.subreddit,
-        'filter'    : ['url', 'domain', 'title']
-    }
+    reddify = ReddifyAPI(**{**dotenv_values(".env")})
+    reddify.playlist_from_subreddit(
+        subreddit=args.subreddit, after=args.days, limit=args.limit, ignore_artist=args.ignore_artist)
 
-    if args.limit: query_options['limit'] = args.limit
 
-    if not os.path.exists('config.yaml'):
-        shutil.move('client.yaml', 'config.yaml')
-
-    reddit = PushshiftAPI()
-    spotify = SpotifyAPI()
-    spotify.createPlaylist()
-
-    for submission in reddit.search_submissions(**query_options):
-        if submission.domain.startswith('youtu'):
-            spotify.queueTrack(submission)
-
-    spotify.updatePlaylist()
-
+if __name__ == '__main__':
+    main()
