@@ -5,9 +5,14 @@ from psaw.PushshiftAPI import PushshiftAPI
 from typing import Optional
 from dotenv import load_dotenv
 
+
 def notify(string):
     sys.stdout.write(string)
     sys.stdout.flush()
+
+
+def title_regex(string):
+    return  re.sub(r'[\(\[].*?[\)\]]|\"', '', string.title().strip())
 
 
 class Reddify:
@@ -117,8 +122,8 @@ class Reddify:
                     
                 if len(string := re.split(r'-|—', submission.title)) < 2: continue
 
-                artist = string[0].title().strip()    
-                track = re.sub(r'[\(\[].*?[\)\]]|\"', '', string[1].title().strip())
+                artist = title_regex(string[0])    
+                track = title_regex(string[1])
 
                 result = self.spotify_credflow.search(
                     q=f'artist: {artist} track: {track}', limit=1, type='track'
