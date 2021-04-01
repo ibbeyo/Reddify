@@ -5,6 +5,11 @@ from psaw.PushshiftAPI import PushshiftAPI
 from typing import Optional
 from dotenv import load_dotenv
 
+def notify(string):
+    sys.stdout.write(string)
+    sys.stdout.flush()
+
+
 class Reddify:
 
     def __init__(
@@ -80,7 +85,7 @@ class Reddify:
             self.username, name=self.playlist_name)
 
         self._playlist_id = playlist['id']
-        sys.stdout.write(f'\nCreated > Playlist: {self.playlist_name} | Playlist ID: {self._playlist_id}\n')
+        notify(f'\nCreated > Playlist: {self.playlist_name} | Playlist ID: {self._playlist_id}\n\n')
         return self._playlist_id
 
 
@@ -122,11 +127,11 @@ class Reddify:
                 if (tracks := result['tracks']['items']):
                     if (uri := tracks[0]['uri']) not in uri_futures:
                         uri_futures.append(uri)
-                        sys.stdout.write(f'Queued > URI: {uri} | Track: {artist} - {track}\n')
+                        notify(f'Queued > URI: {uri} | Track: {artist} - {track}\n')
                         continue
         
         if payload := set(uri_futures).difference(set(self.playlist_tracks)):
-            sys.stdout.write(
+            notify(
                 f'\nUpdating > Playlist: {self.playlist_name} | # of Tracks in Update: {len(payload)}\n'
             )
 
@@ -135,4 +140,4 @@ class Reddify:
 
         stop = timeit.default_timer()
 
-        sys.stdout.write(f'Complete > Runtime: {stop-start}\n')
+        notify(f'Complete > Runtime: {stop-start}\n')
