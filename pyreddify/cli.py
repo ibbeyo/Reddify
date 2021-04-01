@@ -5,13 +5,13 @@ def main():
     parser = argparse.ArgumentParser(description='Reddify CLI')
         
     parser.add_argument(
-        '-s', '--subreddit', type=str, metavar='', required=True, help='Subreddit Name')
+        'subreddit', type=str, metavar='', help='Subreddit Name')
 
     parser.add_argument(
-        '-a', '--after', type=int, metavar='', help='Days Back', default=1)
+        '-a', '--after', type=int, metavar='', default=1, help='Days after. Defaults to 1.')
 
     parser.add_argument(
-        '-l', '--limit', type=int, metavar='', help='Max Number of Posts to Request', default=None)
+        '-l', '--limit', type=int, metavar='', help='Max Number of Posts to Request. Defaults to all.', default=None)
 
     args = parser.parse_args()
 
