@@ -14,7 +14,7 @@ As per [Spotipy](https://spotipy.readthedocs.io/en/2.17.1/#getting-started)
 "You will need to register your app at [My Dashboard](https://developer.spotify.com/dashboard/applications) to get the credentials necessary to make authorized calls (a client id and client secret)"
 
 Once registered, make sure to set the following enviormental variables like so one at a time:
-```bash
+```
 SETX SPOTIPY_CLIENT_ID 'your-spotify-client-id'
 SETX SPOTIPY_CLIENT_SECRET 'your-spotify-client-secret'
 SETX SPOTIPY_REDIRECT_URI 'your-app-redirect-url'
@@ -32,7 +32,7 @@ SPOTIPY_REDIRECT_URI='your-app-redirect-url'
 ```
 
 Note: If no enviormental variables are detected by "SET", that could mean the above "SETX" did not work for you. If so try the following:
-```bash
+```
 SET SPOTIPY_CLIENT_ID='your-spotify-client-id'
 SET SPOTIPY_CLIENT_SECRET='your-spotify-client-secret'
 SET SPOTIPY_REDIRECT_URI='your-app-redirect-url'
@@ -55,7 +55,7 @@ optional arguments:
 ```
 
 Example
-```bash
+```
 >>> reddify metal -l 10
 
 Queued > URI: spotify:track:4Jht9SukHPGW1widhLZPVC | Track: Exist - The Lottery
