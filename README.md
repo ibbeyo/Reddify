@@ -62,7 +62,7 @@ Queued > URI: spotify:track:4Jht9SukHPGW1widhLZPVC | Track: Exist - The Lottery
 Queued > URI: spotify:track:6i5bMVwpQ3xZmLcLyYlE0G | Track: Sutrah - The Plunge
 Queued > URI: spotify:track:3RUjDT1rPQyHOZTs5mjVEP | Track: Faceless Burial - Ravished To The Unknown
 
-Updating > Playlist: \#Reddify - Metal | \# of Tracks in Update: 3
+Updating > Playlist: #Reddify - Metal | # of Tracks in Update: 3
 Complete > Runtime: 4.4979306
 ```
 
