@@ -80,7 +80,7 @@ class Reddify:
             self.username, name=self.playlist_name)
 
         self._playlist_id = playlist['id']
-        sys.stdout.write(f'Created > Playlist: {self.playlist_name} | Playlist ID: {self._playlist_id}')
+        sys.stdout.write(f'\nCreated > Playlist: {self.playlist_name} | Playlist ID: {self._playlist_id}\n')
         return self._playlist_id
 
 
