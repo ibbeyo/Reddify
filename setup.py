@@ -15,7 +15,7 @@ with open(os.path.join(here, 'README.md'), encoding='utf-8') as fs:
 
 setup(
     name='Reddify',
-    version='0.0.10',
+    version='0.0.11',
     description='CLI that Creates and Updates a Spotify Playlist from Youtube URLs Submitted to a Music Subreddit.',
     long_description=long_description,
     long_description_content_type='text/markdown',
