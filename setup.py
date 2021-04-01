@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+import os
 
 classifiers = [
     'Development Status :: 5 - Production/Stable',
@@ -8,11 +9,16 @@ classifiers = [
     'Programming Language :: Python :: 3'
 ]
 
+here = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(here, 'README.md'), encoding='utf-8') as fs:
+    long_description = fs.read()
+
 setup(
     name='Reddify',
     version='0.0.10',
-    description='Spotify Playlist from Music Subreddits.',
-    long_description='Create/Update Spotify Playlist from Youtube Urls submitted to a music subreddit',
+    description='CLI that Creates and Updates a Spotify Playlist from Youtube URLs Submitted to a Music Subreddit.',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/ibbeyo/Reddify',
     author='Juan Rodriguez',
     author_email='ibbs.jcr@gmail.com',
