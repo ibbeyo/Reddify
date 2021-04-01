@@ -1,9 +1,13 @@
 #local environment vars
-._env
+.env
 
 #spotiy cache files
-.cache-*
+.cache*
 
 #python venv
 .venv/
 .vscode/
+
+#pypi dist
+dist/
+reddify.egg-info/

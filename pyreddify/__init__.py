@@ -1,0 +1,1 @@
+from pyreddify.__main__ import Reddify
