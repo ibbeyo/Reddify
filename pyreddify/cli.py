@@ -1,5 +1,11 @@
-import argparse
+import argparse, sys, os, timeit
 from pyreddify import Reddify
+
+
+def notify(string):
+    sys.stdout.write(string)
+    sys.stdout.flush()
+
 
 def main():
     parser = argparse.ArgumentParser(description='Reddify CLI')
@@ -13,9 +19,33 @@ def main():
     parser.add_argument(
         '-l', '--limit', type=int, metavar='', help='Max Number of Posts to Request. Defaults to all.', default=None)
 
+    parser.add_argument(
+        '-ef', '--load-envfile', type=str, metavar='', help='Load Spotify Auth/Creds From .env file.', default=None)
+
     args = parser.parse_args()
 
-    Reddify(args.subreddit, after=args.after, limit=args.limit)
+    start = timeit.default_timer()
+
+    reddify = Reddify(args.subreddit, after=args.after, limit=args.limit)
+
+    if args.load_envfile:
+        assert os.path.exists(args.load_envfile)
+        reddify.load_from_env_file(args.load_envfile)
+    else:
+        reddify.load_from_env_vars()
+
+    total = 0
+    for submission in reddify.seek_submissions():
+        track = reddify.search_spotify(submission.title)
+
+        if track.is_available:
+            if reddify.playlist_update(track.uri):
+                total += 1
+                notify(f'Added > URI: {track.uri} | Track: {track.artist} - {track.name}\n')
+
+    stop = timeit.default_timer()
+    notify(f'Finished > Runtime: {stop-start} | # Tracks Added: {total}\n')
+
 
 if __name__ == '__main__':
     main()

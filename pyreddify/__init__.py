@@ -1,1 +1,1 @@
-from pyreddify.__main__ import Reddify
+from pyreddify.reddify import Reddify
