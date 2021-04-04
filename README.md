@@ -1,13 +1,13 @@
 # Reddify
 Reddify is a Command Line Application that Creates and Updates a Spotify Playlist from Youtube URLs Submitted to a Music Subreddit.
 
-## Installation
+<!-- ## Installation
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install reddify.
 
 ```bash
 pip install Reddify
-```
+``` -->
 
 ## Getting Started
 As per [Spotipy](https://spotipy.readthedocs.io/en/2.17.1/#getting-started)
