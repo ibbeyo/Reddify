@@ -15,13 +15,12 @@ with open(os.path.join(here, 'README.md'), encoding='utf-8') as fs:
 
 setup(
     name='Reddify',
-    version='0.0.13',
-    description='CLI that Creates and Updates a Spotify Playlist from Youtube URLs Submitted to a Music Subreddit.',
+    version='0.0.14',
+    description='Creates and Updates a Spotify Playlist from Youtube Submissions to a Music Subreddit.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/ibbeyo/Reddify',
-    author='Juan Rodriguez',
-    author_email='ibbs.jcr@gmail.com',
+    author='Ibbeyo',
     license='MIT',
     entry_points={
         "console_scripts": [
