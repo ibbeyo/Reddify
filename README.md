@@ -69,7 +69,7 @@ Added > URI: spotify:track:1ge8Ots6ASC1va7kx348LJ | Track: Blind Guardian - Sadl
 Finished > Runtime: 4.3693469 | # Tracks Added: 5
 ```
 
-## Usage as a Module
+## Using the Module
 
 Importing the module:
 
@@ -77,9 +77,7 @@ Importing the module:
 from pyreddify import Reddify
 ```
 
-Loading Spotify Auth/Creds:
-
--- By Parameters:
+Loading Spotify Auth/Creds By Parameters:
 ```python
 reddify = Reddify(
     'powermetal', 
@@ -90,13 +88,13 @@ reddify = Reddify(
 
 ```
 
--- By Enviormental Variables:
+Loading Spotify Auth/Creds By Enviormental Variables:
 ```python
 reddify = Reddify('powermetal', limit=10)
 reddify.load_from_env_vars()
 ```
 
--- By Enviormental File:
+Loading Spotify Auth/Creds By Enviormental File:
 ```python
 envfile = 'you-env-file'
 
@@ -104,7 +102,7 @@ reddify = Reddify('powermetal', limit=10)
 reddify.load_from_env_file(envfile)
 ```
 
--- Sample:
+Sample Usage:
 ```python
 from pyreddify import Reddify
 
