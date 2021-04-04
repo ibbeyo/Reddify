@@ -38,39 +38,84 @@ SET SPOTIPY_CLIENT_SECRET='your-spotify-client-secret'
 SET SPOTIPY_REDIRECT_URI='your-app-redirect-url'
 ```
 
+
 ## Using the CLI
+CLI will by default load from enviormental variable unless --load-envfile is used.
 ```bash
-usage: reddify [-h] [-a] [-l]
+usage: cli.py [-h] [-a] [-l] [-ef]    
 
 Reddify CLI
 
 positional arguments:
-                 Subreddit Name
+                        Subreddit Name
 
 optional arguments:
-  -h, --help     show this help message and exit
-  -a , --after   Days after. Defaults to 1.
-  -l , --limit   Max Number of Posts to Request. Defaults to all.
-
+  -h, --help            show this help message and exit
+  -a , --after          Days after. Defaults to 1.
+  -l , --limit          Max Number of Posts to Request. Defaults to all.
+  -ef , --load-envfile
+                        Load Spotify Auth/Creds From .env file.
 ```
 
 Example
 ```
->>> reddify metal -l 10
+>>> reddify powermetal -l 10
 
-Queued > URI: spotify:track:4Jht9SukHPGW1widhLZPVC | Track: Exist - The Lottery
-Queued > URI: spotify:track:6i5bMVwpQ3xZmLcLyYlE0G | Track: Sutrah - The Plunge
-Queued > URI: spotify:track:3RUjDT1rPQyHOZTs5mjVEP | Track: Faceless Burial - Ravished To The Unknown
-
-Updating > Playlist: #Reddify - Metal | # of Tracks in Update: 3
-Complete > Runtime: 4.4979306
+Added > URI: spotify:track:28UMKxUrrjYqTnpPvtjMED | Track: Aldious - Sweet Temptation - Live ver.
+Added > URI: spotify:track:74rWh6RlUV4pCHBVapIshX | Track: Theocracy - Easter
+Added > URI: spotify:track:3aKimOh0tmxuO43PC70GII | Track: Grailknights - Cthulhu
+Added > URI: spotify:track:6MKcVvnFB1iUIdJmjAry6i | Track: Helloween - Juggernaut
+Added > URI: spotify:track:1ge8Ots6ASC1va7kx348LJ | Track: Blind Guardian - Sadly Sings Destiny - Remastered 2017
+Finished > Runtime: 4.3693469 | # Tracks Added: 5
 ```
 
-## Usage as a Module 
+## Usage as a Module
+
+Importing the module:
+
+```python
+from pyreddify import Reddify
+```
+
+Loading Spotify Auth/Creds:
+-- By Parameters:
+```python
+reddify = Reddify(
+    'powermetal', 
+    limit=10, 
+    client_id='your-spotify-client-id', 
+    client_secret='your-spotify-client-secret', 
+    redirect_uri='your-app-redirect-url')
+
+```
+
+-- By Enviormental Variables:
+```python
+reddify = Reddify('powermetal', limit=10)
+reddify.load_from_env_vars()
+```
+
+-- By Enviormental File:
+```python
+envfile = 'you-env-file'
+
+reddify = Reddify('powermetal', limit=10)
+reddify.load_from_env_file(envfile)
+```
+
+-- Example:
 ```python
 from pyreddify import Reddify
 
-Reddify('Metal', after=2)
+reddify = Reddify('powermetal', limit=10)
+
+reddify.load_from_env_vars()
+
+for submission in reddify.seek_submissions():
+    track = reddify.search_spotify(submission.title)
+
+    if track.is_available:
+        reddify.playlist_update(track.uri)
 ```
 
 ## License
