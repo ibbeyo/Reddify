@@ -78,6 +78,7 @@ from pyreddify import Reddify
 ```
 
 Loading Spotify Auth/Creds:
+
 -- By Parameters:
 ```python
 reddify = Reddify(
@@ -103,7 +104,7 @@ reddify = Reddify('powermetal', limit=10)
 reddify.load_from_env_file(envfile)
 ```
 
--- Example:
+-- Sample:
 ```python
 from pyreddify import Reddify
 
