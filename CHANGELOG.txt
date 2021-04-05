@@ -1,6 +1,11 @@
 Change Log
 ==================
 
-0.0.13 (04/01/2020)
+(04/01/2020)
 ------------------
--- Updated Release
+--- Updated Everything
+
+(04/05/2020)
+------------------
+--- Allowed Spotify creds to be passed thru parameters or a .env file.
+--- Allowed more Reddit/Spotify data to be accessible in the API.
