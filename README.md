@@ -57,7 +57,7 @@ optional arguments:
                         Load Spotify Auth/Creds From .env file.
 ```
 
-###### Sample Usage:
+Sample Usage:
 ```
 >>> reddify powermetal -l 10
 
@@ -103,7 +103,7 @@ reddify = Reddify('powermetal', limit=10)
 reddify.load_from_env_file(envfile)
 ```
 
-###### Sample Usage:
+Sample Usage:
 ```python
 from pyreddify import Reddify
 
