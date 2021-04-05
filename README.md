@@ -71,13 +71,13 @@ Finished > Runtime: 4.3693469 | # Tracks Added: 5
 
 ## Using the Module
 
-######Importing the module:
+###### Importing the module:
 
 ```python
 from pyreddify import Reddify
 ```
 
-######Loading Spotify Auth/Creds 
+###### Loading Spotify Auth/Creds 
 
 By Parameters:
 ```python
@@ -103,7 +103,7 @@ reddify = Reddify('powermetal', limit=10)
 reddify.load_from_env_file(envfile)
 ```
 
-######Sample Usage:
+###### Sample Usage:
 ```python
 from pyreddify import Reddify
 
