@@ -57,7 +57,7 @@ optional arguments:
                         Load Spotify Auth/Creds From .env file.
 ```
 
-Sample Usage:
+###### Sample Usage:
 ```
 >>> reddify powermetal -l 10
 
@@ -77,9 +77,9 @@ Finished > Runtime: 4.3693469 | # Tracks Added: 5
 from pyreddify import Reddify
 ```
 
-###### Loading Spotify Auth/Creds 
+Loading Spotify Auth/Creds 
 
-By Parameters:
+###### By Parameters:
 ```python
 reddify = Reddify(
     'powermetal', 
@@ -89,13 +89,13 @@ reddify = Reddify(
     redirect_uri='your-app-redirect-url')
 ```
 
-By Enviormental Variables:
+###### By Enviormental Variables:
 ```python
 reddify = Reddify('powermetal', limit=10)
 reddify.load_from_env_vars()
 ```
 
-By Enviormental File:
+###### By Enviormental File:
 ```python
 envfile = 'you-env-file'
 
