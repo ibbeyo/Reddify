@@ -9,7 +9,7 @@
 .vscode/
 testing/
 __pycache__/
-TODO.txt
+
 
 #pypi dist
 dist/
