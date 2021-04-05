@@ -16,7 +16,7 @@ with open(os.path.join(here, 'README.md'), encoding='utf-8') as fs:
 setup(
     name='Reddify',
     version='0.0.14',
-    description='Creates and Updates a Spotify Playlist from Youtube Submissions to a Music Subreddit.',
+    description='Creates and Updates a Spotify Playlist from Youtube Submissions on a Music Subreddit.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/ibbeyo/Reddify',
