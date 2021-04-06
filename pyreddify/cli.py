@@ -35,8 +35,8 @@ def main():
         reddify.load_from_env_vars()
 
     total = 0
-    for submission in reddify.seek_submissions():
-        track = reddify.search_spotify(submission.title)
+    for submission in reddify.re:
+        track = reddify.get_subreddit_submissions(submission.title)
 
         if track.is_available:
             if reddify.playlist_update(track.uri):
