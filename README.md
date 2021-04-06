@@ -109,8 +109,8 @@ reddify = Reddify('powermetal', limit=10)
 
 reddify.load_from_env_vars()
 
-for submission in reddify.seek_submissions():
-    track = reddify.search_spotify(submission.title)
+for submission in reddify.get_subreddit_submissions():
+    track = reddify.get_spotify_track(submission.title)
 
     if track.is_available:
         reddify.playlist_update(track.uri)
