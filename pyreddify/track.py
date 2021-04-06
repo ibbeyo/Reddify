@@ -1,13 +1,18 @@
 import re
 import spotipy
 from typing import Optional
+from spotipy import client
 from spotipy.oauth2 import SpotifyClientCredentials
 
 
-class Track(object):
-    def __init__(self, client_id, client_secret, title) -> None:
+class SpotifyTrack(object):
+    def __init__(self, client_id, client_secret) -> None:
         super().__init__()
         
+        self.client_id      = client_id
+        self.client_secret  = client_secret
+        self.metadata       = None
+
         self._is_available  : bool = False
         self._id            : Optional[str] = None
         self._uri           : Optional[str] = None
@@ -20,7 +25,10 @@ class Track(object):
         self._album_art     : Optional[str] = None
         self._album_uri     : Optional[str] = None
         self._album_released: Optional[str] = None
-        
+
+
+    def search(self, title):
+        "Search Spotify for track by title using the format: 'ARTIST - SONGNAME'."
         if len(string := re.split(r'-|—', title)) < 2:
             self.metadata = None
         
@@ -30,13 +38,14 @@ class Track(object):
 
             sp = spotipy.Spotify(
                 client_credentials_manager=SpotifyClientCredentials(
-                    client_id=client_id, client_secret=client_secret
+                    client_id=self.client_id, client_secret=self.client_secret
                 )
             )
 
             res = sp.search(q=f'artist: {artist} track: {name}', limit=1, type='track')
         
             self.metadata = res['tracks']['items'][0] if res['tracks']['items'] else None
+        return self
 
 
     @property
