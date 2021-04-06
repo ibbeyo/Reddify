@@ -4,7 +4,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from psaw.PushshiftAPI import PushshiftAPI
 from typing import Optional, Tuple
 from dotenv import load_dotenv, dotenv_values
-from pyreddify.track import Track
+from pyreddify.track import SpotifyTrack
 
 
 class Reddify:
@@ -17,8 +17,7 @@ class Reddify:
         client_id       : Optional[str] = None,
         client_secret   : Optional[str] = None,
         redirect_uri    : Optional[str] = None,
-        username        : Optional[str] = None,
-        playlist_id     : Optional[str] = None
+        username        : Optional[str] = None
     ):
         super().__init__()
 
@@ -31,10 +30,11 @@ class Reddify:
         self._client_secret     = client_secret
         self._redirect_uri      = redirect_uri
         self._username          = username
-        self._playlist_id       = playlist_id
+        self._playlist_id       = None
 
 
     def load_from_env_file(self, filepath=None):
+        'Load Spotify Creds from a Env File'
         config = dotenv_values(filepath)
         self._client_id     = config['SPOTIPY_CLIENT_ID']
         self._client_secret = config['SPOTIPY_CLIENT_SECRET']
@@ -42,6 +42,7 @@ class Reddify:
 
         
     def load_from_env_vars(self):
+        'Load Spotify Creds from Env Variables'
         load_dotenv()
         self._client_id     = os.getenv('SPOTIPY_CLIENT_ID')
         self._client_secret = os.getenv('SPOTIPY_CLIENT_SECRET')
@@ -92,6 +93,7 @@ class Reddify:
 
 
     def playlist_track_exist(self, track_uri: str) -> bool:
+        'Checks if playlist exists.'
         if track_uri:
             tracks = self.__spotify_authflow.user_playlist_tracks(
                     self.username, playlist_id=self.playlist_id)
@@ -102,6 +104,7 @@ class Reddify:
 
 
     def playlist_update(self, track_uri: str) -> bool:
+        'Updates the playlist with the new track. Will check for dupes.'
         if not self.playlist_track_exist(track_uri):
             self.__spotify_authflow.user_playlist_add_tracks(
                 self.username, playlist_id=self.playlist_id, tracks=[track_uri])
@@ -109,7 +112,9 @@ class Reddify:
         return False
 
 
-    def seek_submissions(self):
+    def get_subreddit_submissions(self):
+        'Get subreddit submissions.'
+
         options = {
             'after'     : self.after,
             'subreddit' : self.subreddit
@@ -121,6 +126,9 @@ class Reddify:
                 yield submission
     
 
-    def search_spotify(self, title) -> Track:
-        return Track(self._client_id, self._client_secret, title)
+    def get_spotify_track(self, title) -> SpotifyTrack:
+        'Get a spotify track.'
+        yield SpotifyTrack(self._client_id, self._client_secret).search(title)
+        
+
 
