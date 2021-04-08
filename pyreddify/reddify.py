@@ -1,24 +1,16 @@
-import os
+import os, re
 import spotipy
-from spotipy.oauth2 import SpotifyOAuth
+from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 from psaw.PushshiftAPI import PushshiftAPI
 from typing import Optional, Tuple
 from dotenv import load_dotenv, dotenv_values
-from pyreddify.track import SpotifyTrack
+from pyreddify.metadata import SpotifyTrackItem
 
 
 class Reddify:
 
-    def __init__(
-        self, 
-        subreddit, 
-        after           = 1, 
-        limit           : Optional[int] = None,
-        client_id       : Optional[str] = None,
-        client_secret   : Optional[str] = None,
-        redirect_uri    : Optional[str] = None,
-        username        : Optional[str] = None
-    ):
+    def __init__(self, subreddit, after=1, limit: Optional[Tuple[int, str]]=None, client_id: Optional[str]=None,
+        client_secret: Optional[str]=None, redirect_uri: Optional[str]=None, username: Optional[str]=None):
         super().__init__()
 
         self.subreddit          = subreddit
@@ -35,6 +27,7 @@ class Reddify:
 
     def load_from_env_file(self, filepath=None):
         'Load Spotify Creds from a Env File'
+
         config = dotenv_values(filepath)
         self._client_id     = config['SPOTIPY_CLIENT_ID']
         self._client_secret = config['SPOTIPY_CLIENT_SECRET']
@@ -43,6 +36,7 @@ class Reddify:
         
     def load_from_env_vars(self):
         'Load Spotify Creds from Env Variables'
+
         load_dotenv()
         self._client_id     = os.getenv('SPOTIPY_CLIENT_ID')
         self._client_secret = os.getenv('SPOTIPY_CLIENT_SECRET')
@@ -51,6 +45,7 @@ class Reddify:
 
     @property
     def username(self) -> str:
+
         if self._username:
             return self._username
         self._username = self.__spotify_authflow.current_user()['id']
@@ -59,6 +54,7 @@ class Reddify:
 
     @property
     def __spotify_authflow(self):
+
         return spotipy.Spotify(auth_manager=SpotifyOAuth(
             client_id=self._client_id,
             client_secret=self._client_secret,
@@ -66,6 +62,15 @@ class Reddify:
             scope='playlist-modify-public,playlist-modify-private,playlist-read-collaborative',
             cache_path=os.path.join(os.path.dirname(__file__), '.cache')
         ))
+
+
+    @property
+    def __spotify_credflow(self):
+        return spotipy.Spotify(
+            client_credentials_manager=SpotifyClientCredentials(
+                client_id=self._client_id, client_secret=self._client_secret
+            )
+        )
 
 
     @property
@@ -93,7 +98,8 @@ class Reddify:
 
 
     def playlist_track_exist(self, track_uri: str) -> bool:
-        'Checks if playlist exists.'
+        'Checks if track exists within the playlist.'
+
         if track_uri:
             tracks = self.__spotify_authflow.user_playlist_tracks(
                     self.username, playlist_id=self.playlist_id)
@@ -105,6 +111,7 @@ class Reddify:
 
     def playlist_update(self, track_uri: str) -> bool:
         'Updates the playlist with the new track. Will check for dupes.'
+
         if not self.playlist_track_exist(track_uri):
             self.__spotify_authflow.user_playlist_add_tracks(
                 self.username, playlist_id=self.playlist_id, tracks=[track_uri])
@@ -126,9 +133,22 @@ class Reddify:
                 yield submission
     
 
-    def get_spotify_track(self, title) -> SpotifyTrack:
+    def get_spotify_track(self, title) -> SpotifyTrackItem:
         'Get a spotify track.'
-        yield SpotifyTrack(self._client_id, self._client_secret).search(title)
+
+        def format_title(string):
+            return re.sub(r'[\(\[].*?[\)\]]|\"', '', string.title().strip())
+            
+        if len(string := re.split(r'-|—', title)) >= 2:
         
+            artist = format_title(string[0])
+            name = format_title(string[1])
 
+            res = self.__spotify_credflow.search(
+                q=f'artist: {artist} track: {name}', limit=1, type='track'
+            )
 
+            if metadata := res['tracks']['items']:
+                return SpotifyTrackItem(metadata=metadata[0])
+
+        return None
