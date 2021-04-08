@@ -35,13 +35,13 @@ def main():
         reddify.load_from_env_vars()
 
     total = 0
-    for submission in reddify.re:
-        track = reddify.get_subreddit_submissions(submission.title)
+    for submission in reddify.get_subreddit_submissions:
+        song = reddify.get_spotify_track(submission.title)
 
-        if track.is_available:
-            if reddify.playlist_update(track.uri):
+        if song:
+            if reddify.playlist_update(song.track.uri):
                 total += 1
-                notify(f'Added > URI: {track.uri} | Track: {track.artist} - {track.name}\n')
+                notify(f'Added > URI: {song.track.uri} | Track: {song.artist.name} - {song.track.name}\n')
 
     stop = timeit.default_timer()
     notify(f'Finished > Runtime: {stop-start} | # Tracks Added: {total}\n')
