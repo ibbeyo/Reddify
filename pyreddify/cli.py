@@ -35,9 +35,8 @@ def main():
         reddify.load_from_env_vars()
 
     total = 0
-    for submission in reddify.get_subreddit_submissions:
+    for submission in reddify.get_subreddit_submissions():
         song = reddify.get_spotify_track(submission.title)
-
         if song:
             if reddify.playlist_update(song.track.uri):
                 total += 1
