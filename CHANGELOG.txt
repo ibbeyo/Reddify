@@ -9,3 +9,7 @@ Change Log
 ------------------
 --- Allowed Spotify creds to be passed thru parameters or a .env file.
 --- Allowed more Reddit/Spotify data to be accessible in the API.
+
+(04/08/2020)
+------------------
+--- Changed track.py to metadata.py (Dataclasses)

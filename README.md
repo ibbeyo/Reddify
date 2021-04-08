@@ -105,15 +105,13 @@ reddify.load_from_env_file(envfile)
 ```python
 from pyreddify import Reddify
 
-reddify = Reddify('powermetal', limit=10)
-
+reddify = Reddify('metalcore', limit=100, after=2)
 reddify.load_from_env_vars()
 
 for submission in reddify.get_subreddit_submissions():
-    track = reddify.get_spotify_track(submission.title)
-
-    if track.is_available:
-        reddify.playlist_update(track.uri)
+    song = reddify.get_spotify_track(submission.title)
+    if song:
+        reddify.playlist_update(song.track.uri)
 ```
 
 ## License
