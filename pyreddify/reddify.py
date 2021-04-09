@@ -4,7 +4,7 @@ from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 from psaw.PushshiftAPI import PushshiftAPI
 from typing import Optional, Tuple
 from dotenv import load_dotenv, dotenv_values
-from pyreddify.metadata import SpotifyTrackItem
+from pyreddify.spotify.itemtypes import TrackType
 
 
 class Reddify:
@@ -133,7 +133,7 @@ class Reddify:
                 yield submission
     
 
-    def get_spotify_track(self, title) -> SpotifyTrackItem:
+    def get_spotify_track(self, title) -> TrackType:
         'Get a spotify track.'
 
         def format_title(string):
@@ -148,7 +148,7 @@ class Reddify:
                 q=f'artist: {artist} track: {name}', limit=1, type='track'
             )
 
-            if metadata := res['tracks']['items']:
-                return SpotifyTrackItem(metadata=metadata[0])
+            if item := res['tracks']['items']:
+                return TrackType(item=item[0])
 
         return None
