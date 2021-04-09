@@ -12,4 +12,4 @@ Change Log
 
 (04/08/2020)
 ------------------
---- Changed track.py to metadata.py (Dataclasses)
+--- Added itemtypes.py (Dataclasses) for spotify track results.
