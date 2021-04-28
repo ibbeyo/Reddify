@@ -150,8 +150,7 @@ class SpotifyPlaylist(Subreddit):
         
         unique_tracks = self.queued_track_uris.difference(existing_track_uris)
         self.queued_track_uris.clear()
-
-        if tracks:
+        if unique_tracks:
             try:
                 self.__authflow.user_playlist_add_tracks(
                     self.username, playlist_id=self.id, tracks=list(unique_tracks)
