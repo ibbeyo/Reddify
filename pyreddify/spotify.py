@@ -74,29 +74,24 @@ class SpotifyPlaylist(Subreddit):
     
     @property
     def __authflow(self):
-        try:
-            return spotipy.Spotify(auth_manager=SpotifyOAuth(
-                client_id=self.client_id,
-                client_secret=self.client_secret,
-                redirect_uri=self.redirect_uri,
-                scope='playlist-modify-public,playlist-modify-private,playlist-read-collaborative',
-                cache_path=os.path.join(os.path.dirname(__file__), '.cache')
-            ))
-        except Exception:
-            raise
+        return spotipy.Spotify(auth_manager=SpotifyOAuth(
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            redirect_uri=self.redirect_uri,
+            scope='playlist-modify-public,playlist-modify-private,playlist-read-collaborative',
+            cache_path=os.path.join(os.path.dirname(__file__), '.cache')
+        ))
+
 
 
     @property
     def __credflow(self):
-        try:
-            return spotipy.Spotify(
-                auth_manager=SpotifyClientCredentials(
-                    client_id=self.client_id,
-                    client_secret=self.client_secret
-                )
+        return spotipy.Spotify(
+            client_credentials_manager=SpotifyClientCredentials(
+                client_id=self.client_id,
+                client_secret=self.client_secret
             )
-        except Exception:
-            raise
+        )
 
     
     @property
