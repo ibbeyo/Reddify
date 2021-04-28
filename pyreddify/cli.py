@@ -33,8 +33,8 @@ def main():
     for submission in playlist.get_subreddit_submissions(subreddit=args.subreddit, after=args.after, limit=args.limit):
         song = playlist.get_track(submission.title)
         if song:
-            if playlist.queue(song.track.uri):
-                notify(f'Queued > URI: {song.track.uri} | Track: {song.artist.name} - {song.track.name}\n')
+            playlist.queue(song.track.uri)
+            notify(f'Queued > URI: {song.track.uri} | Track: {song.artist.name} - {song.track.name}\n')
 
     total = playlist.update()
 
