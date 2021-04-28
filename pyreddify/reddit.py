@@ -15,7 +15,7 @@ class Subreddit:
         self.subreddit = subreddit
 
         options = {
-            'after': after, 'subreddit': subreddit
+            'after': f'{after}d', 'subreddit': subreddit
         }
 
         if limit:
