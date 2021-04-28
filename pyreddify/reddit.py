@@ -31,12 +31,13 @@ class Subreddit:
         '''
         Parses Reddit title for artist name and track name.
         '''
+        def substr(string):
+            return re.sub(r'[\(\[].*?[\)\]]|\"', '', string.title()).strip()
+
 
         Title = namedtuple('Title', field_names=['artist', 'track'], defaults=[None, None])
 
         strings = re.split(r'-|—', title)
         if len(strings) >= 2:
-            return Title(
-                *[re.sub(r'[\(\[].*?[\)\]]|\"', '', string.title()).strip() for string in strings]
-            )
+            return Title(artist=substr(strings[0]), track=substr(strings[1]))
         return Title
