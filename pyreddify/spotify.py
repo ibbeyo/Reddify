@@ -1,4 +1,3 @@
-from typing import final
 from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 from pyreddify.reddit import Subreddit
 from dataclasses import dataclass
