@@ -1,5 +1,5 @@
-import argparse, sys, os, timeit
-from pyreddify import Reddify
+import argparse, sys, timeit
+from pyreddify import SpotifyPlaylist
 
 
 def notify(string):
@@ -26,24 +26,20 @@ def main():
 
     start = timeit.default_timer()
 
-    reddify = Reddify(args.subreddit, after=args.after, limit=args.limit)
+    playlist = SpotifyPlaylist()
+    playlist.load_from_env(filepath=args.load_envfile)
+    
 
-    if args.load_envfile:
-        assert os.path.exists(args.load_envfile)
-        reddify.load_from_env_file(args.load_envfile)
-    else:
-        reddify.load_from_env_vars()
-
-    total = 0
-    for submission in reddify.get_subreddit_submissions():
-        song = reddify.get_spotify_track(submission.title)
-        
+    for submission in playlist.get_subreddit_submissions(subreddit=args.subredddit, after=args.after, limit=args.limit):
+        song = playlist.get_track(submission.title)
         if song:
-            if reddify.playlist_update(song.track.uri):
-                total += 1
-                notify(f'Added > URI: {song.track.uri} | Track: {song.artist.name} - {song.track.name}\n')
+            if playlist.queue(song.track.uri):
+                notify(f'Queued > URI: {song.track.uri} | Track: {song.artist.name} - {song.track.name}\n')
+
+    total = playlist.update()
 
     stop = timeit.default_timer()
+
     notify(f'Finished > Runtime: {stop-start} | # Tracks Added: {total}\n')
 
 

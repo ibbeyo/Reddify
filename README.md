@@ -61,11 +61,11 @@ optional arguments:
 ```
 >>> reddify powermetal -l 10
 
-Added > URI: spotify:track:28UMKxUrrjYqTnpPvtjMED | Track: Aldious - Sweet Temptation - Live ver.
-Added > URI: spotify:track:74rWh6RlUV4pCHBVapIshX | Track: Theocracy - Easter
-Added > URI: spotify:track:3aKimOh0tmxuO43PC70GII | Track: Grailknights - Cthulhu
-Added > URI: spotify:track:6MKcVvnFB1iUIdJmjAry6i | Track: Helloween - Juggernaut
-Added > URI: spotify:track:1ge8Ots6ASC1va7kx348LJ | Track: Blind Guardian - Sadly Sings Destiny - Remastered 2017
+Queued > URI: spotify:track:28UMKxUrrjYqTnpPvtjMED | Track: Aldious - Sweet Temptation - Live ver.
+Queued > URI: spotify:track:74rWh6RlUV4pCHBVapIshX | Track: Theocracy - Easter
+Queued > URI: spotify:track:3aKimOh0tmxuO43PC70GII | Track: Grailknights - Cthulhu
+Queued > URI: spotify:track:6MKcVvnFB1iUIdJmjAry6i | Track: Helloween - Juggernaut
+Queued > URI: spotify:track:1ge8Ots6ASC1va7kx348LJ | Track: Blind Guardian - Sadly Sings Destiny - Remastered 2017
 Finished > Runtime: 4.3693469 | # Tracks Added: 5
 ```
 
@@ -74,44 +74,39 @@ Finished > Runtime: 4.3693469 | # Tracks Added: 5
 ###### Importing the module:
 
 ```python
-from pyreddify import Reddify
+from pyreddify import SpotifyPlaylist
 ```
 
 ###### Loading Spotify Credentials By Parameters:
 ```python
-reddify = Reddify(
-    'powermetal', 
-    limit=10, 
+playlist = SpotifyPlaylist(
     client_id='your-spotify-client-id', 
     client_secret='your-spotify-client-secret', 
     redirect_uri='your-app-redirect-url')
 ```
 
-###### Loading Spotify Credentials By Enviormental Variables:
-```python
-reddify = Reddify('powermetal', limit=10)
-reddify.load_from_env_vars()
-```
 
-###### Loading Spotify Credentials By Enviormental File:
+###### Reddify will check for both enviormental file or variable:
 ```python
 envfile = 'you-env-file'
 
-reddify = Reddify('powermetal', limit=10)
-reddify.load_from_env_file(envfile)
+playlist = SpotifyPlaylist()
+playlist.load_from_env(filepath=envfile)
 ```
 
 ###### Sample Usage:
 ```python
-from pyreddify import Reddify
+from pyreddify import SpotifyPlaylist
 
-reddify = Reddify('metalcore', limit=100, after=2)
-reddify.load_from_env_vars()
+playlist = SpotifyPlaylist()
+playlist.load_from_env()
 
-for submission in reddify.get_subreddit_submissions():
-    song = reddify.get_spotify_track(submission.title)
+for submission in playlist.get_subreddit_submissions('metalcore', limit=15, after=2):
+    song = playlist.get_track(submission.title)
     if song:
-        reddify.playlist_update(song.track.uri)
+        playlist.queue(song.track.uri)
+
+playlist.update()
 ```
 
 ## License

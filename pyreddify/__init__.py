@@ -1,1 +1,1 @@
-from pyreddify.reddify import Reddify
+from pyreddify.spotify import SpotifyPlaylist
