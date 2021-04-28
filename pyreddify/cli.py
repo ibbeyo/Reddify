@@ -30,7 +30,7 @@ def main():
     playlist.load_from_env(filepath=args.load_envfile)
     
 
-    for submission in playlist.get_subreddit_submissions(subreddit=args.subredddit, after=args.after, limit=args.limit):
+    for submission in playlist.get_subreddit_submissions(subreddit=args.subreddit, after=args.after, limit=args.limit):
         song = playlist.get_track(submission.title)
         if song:
             if playlist.queue(song.track.uri):
