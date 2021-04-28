@@ -90,7 +90,7 @@ class SpotifyPlaylist(Subreddit):
     def __credflow(self):
         try:
             return spotipy.Spotify(
-                client_credentials_manager=SpotifyClientCredentials(
+                auth_manager=SpotifyClientCredentials(
                     client_id=self.client_id,
                     client_secret=self.client_secret
                 )
